@@ -4,6 +4,7 @@
 #include "common/config/udo_config.h"
 #include "http/udo_http_req.h"
 #include "http/udo_http_rep.h"
+#include <pcre2.h>
 
 
 void SendResponse(int client)
@@ -28,6 +29,57 @@ void SendResponse(int client)
 
 int main()
 {
+	PCRE2_SPTR pattern = "Get";
+	PCRE2_SPTR subject = "Get \image\res\logo";
+	int errornumber;
+	PCRE2_SIZE erroroffset;
+	pcre2_code *re;
+	PCRE2_SIZE *ovector;
+	size_t subject_length;
+	pcre2_match_data *match_data;
+	int rc;
+	re = pcre2_compile(pattern, PCRE2_SIZE_MAX, 0, &errornumber, &erroroffset, NULL);
+	if (re == NULL)
+	{
+		PCRE2_UCHAR buffer[256];
+		pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
+		printf("PCRE2 compilation failed at offset %d: %s\n", (int)erroroffset,buffer);
+	}
+	match_data = pcre2_match_data_create_from_pattern(re, NULL);
+	subject_length = strlen(subject);
+	rc = pcre2_match(re,subject,subject_length,0,0,match_data,NULL);
+
+	if (rc < 0)
+	{
+		switch (rc)
+		{
+			case PCRE2_ERROR_NOMATCH: 
+				printf("No match\n"); 
+				break;
+			default: 
+				printf("Matching error %d\n", rc); 
+				break;
+		}
+		pcre2_match_data_free(match_data);   /* Release memory used for the match */
+		pcre2_code_free(re);                 /* data and the compiled pattern. */
+		return 1;
+	}
+
+	ovector = pcre2_get_ovector_pointer(match_data);
+	printf("Match succeeded at offset %d\n", (int)ovector[0]);
+	if (rc == 0) 
+	{
+		printf("ovector only has room for %d captured substrings\n", rc - 1);
+	}
+
+	for (int i = 0; i < rc; i++) 
+	{
+		char *substring_start = subject + ovector[2 * i];
+		int substring_length = ovector[2 * i + 1] - ovector[2 * i];
+		printf("%2d: %.*s\n", i, substring_length, substring_start);
+	}
+	pcre2_match_data_free(match_data);
+	pcre2_code_free(re);
 	WORD sockVersion = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	if (WSAStartup(sockVersion, &wsaData) != 0)
