@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>实践，才有优答</title>
+		<style type="text/css">
+		
+			 body {font-family:'微软雅黑';font-size:16px; }
+			 ul {list-style:none;}  
+			.rec_ans_left{height:768px;width:800px;float:left;margin-left:100px;}
+			.rec_ans_right{height:768px;width:500px;float:right;margin-left:0px;margin-top:100px;text-align:left;}
+			.rec_ans_left_link_spe{float:left;margin-left:100px;}
+			.rec_ans_left_link_int{float:left;margin-left:100px;}
+			.rec_ans_left_link>span>a:link,.rec_ans_left_link>span>a:visited
+			{
+				display:block;
+				font-weight:bold;
+				color:#FFFFFF;
+				background-color:#98bf21;
+				width:120px;
+				text-align:center;
+				padding:4px;
+				text-decoration:none;
+			}
+			.rec_ans_left_link>span>a:hover,rec_ans_left_link>span>a:active
+			{
+				background-color:#7A991A;
+			}
+			.rec_ans_middle{margin-top:20px;}
+			.rec_ans_middle_banner {margin-left:10px}
+			.rec_ans_middle_switch {float:right;}
+			.rec_ans_middle_switch_img{margin-bottom:0px;border:0px;padding:0px;position:relative;}
+			.rec_ans_left_category{margin-top:20px;margin-left:100px;}
+			.rec_ans_left_category_parent{  
+			 height: 50px;  
+			 width: 360px;  
+			 border: 1px solid #cbcbcb;       
+			 background-color: #98bf21;  
+			}  
+			.rec_ans_left_category_parent_menu {width: 360px;height: 26px;margin:0px;border:0px;padding:0px;}  
+			.rec_ans_left_category_parent_menu li{   
+			 color:FFFFff;
+			 display:block;  
+			 float: left;  
+			 padding: 0px;  
+			 width:120px;  
+			 text-align: center;  
+			 cursor:pointer;  
+			 background: #98bf21;  
+			 margin-left:0px;
+			 border: 0px;  
+			} 
+			.rec_ans_left_category_parent_menu li.hover{background: #f2f6fb;} 
+			.rec_ans_left_category_child{ clear:both;  padding:0px; margin:0px;border:0px;text-align:center; width:360px;height:30px; } 
+			<!-- .rec_ans_left_category_child ul{display: none;}  -->
+			.rec_ans_left_category_child ul{display: inline;} 
+			.rec_ans_left_category_child li{   
+			 color:FFFFff;
+			 display:block;  
+			 float: left;  
+			 padding: 0px;  
+			 width:120px;  
+			 text-align: center;  
+			 cursor:pointer;  
+			 background: #98bf21;  
+			 margin-left:0px;
+			 border: 0px;  
+			} 
+			.rec_ans_left_category_child li.hover{background: #f2f6fb;} 
+		</style>
+		<script>
+		function setTab(n){        
+		 var tli=document.getElementById("rec_ans_left_category_parent_menu").getElementsByTagName("li");   
+		 var mli=document.getElementById("rec_ans_left_category_child").getElementsByTagName("li");   
+		 for(i=0;i<tli.length;i++){  
+		  tli[i].className=i==n?"hover":"";  
+		  <!-- mli[i].style.display=i==n?"block":"none";-->
+		  mli[i].style.display="inline";
+		 }  
+		} 
+		
+		</script>
+	</head>
+	<body>
+		<div class="rec_ans_left">
+			<div class="rec_ans_left_link">
+				<span><a href=".\recommendanswerpage.html" class="rec_ans_left_link_spe">专业领域</a></span>&nbsp&nbsp
+				<span><a href=".\recommendanswerpage.html" class="rec_ans_left_link_int">兴趣领域</a></span>
+			</div>
+			<div class="rec_ans_left_category">
+				<div class="rec_ans_left_category_parent" id="rec_ans_left_category_parent">
+					 <ul class="rec_ans_left_category_parent_menu" id="rec_ans_left_category_parent_menu">  
+					  <li onclick="setTab(0)" class="hover">python</li>  
+					  <li onclick="setTab(1)">C++</li>        
+					  <li onclick="setTab(2)">oracle</li>                
+					 </ul>  
+					 <div class="rec_ans_left_category_child" id="rec_ans_left_category_child">  
+					  <ul class="rec_ans_left_category_child_block">
+					  <li class="hover">数据分析</li> 
+					  <li>网络爬虫</li>        
+					  <li>机器学习</li</ul>
+					 </div>
+				</div>
+			</div>
+			<div class="rec_ans_middle">
+				<span class="rec_ans_middle_banner">深度思考让你更加专业</span> 
+				<div class="rec_ans_middle_switch">
+					<a href=".\recommendanswerpage.html"> 换一组 <img class="rec_ans_middle_switch_img" src="..\..\images\common\refresh.png"></a>
+				</div>
+			</div>
+			<div class="rec_ans_questions"></div>
+		</div>
+		<div class="rec_ans_right">
+		<div>个人常用链接</div>
+		</div>
+	</body>
+</html>
