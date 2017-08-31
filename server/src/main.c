@@ -6,26 +6,6 @@
 #include "http/udo_http_rep.h"
 
 
-void SendResponse(int client)
-{
-	FILE* f=NULL;
-	udo_config config;
- 	char buf[1024] = "HTTP/1.0 200 ok\r\n"
-		"sssssss\r\n"
- 		"Content-Type: text/html\r\n"
-		"\r\n";
-	char html[4096] = "";
-	udo_config_init(&config);
-	fopen_s(&f, udo_config_get_res(&config, "HomePage.html"), "r+b");
-	fread_s(html, 4096, 4096, 1, f);
-	printf("%s", html);
-	send(client, buf, strlen(buf), 0);
-	
-	send(client, html, strlen(html), 0);
-	fclose(f);
-}
-
-
 int main()
 {
 	WORD sockVersion = MAKEWORD(2, 2);
@@ -54,16 +34,22 @@ int main()
 		char* sendBuf = NULL;
 		SOCKET fd1 = accept(fd, (SOCKADDR*)&clentaddr, &len);
 		recv(fd1, buf, 1024, 0);
-
 		udo_http_req req;
 		udo_http_req_init(&req);
 		udo_http_req_deserialize(&req, buf, 1024);
 		udo_http_rep rep;
 		udo_http_rep_init(&rep, &req);
-		sendBuf = udo_http_rep_serialize(&rep);
-		send(fd1, sendBuf, strlen(sendBuf),0);
+		if (udo_http_rep_serialize(&rep) == UDO_HTTP_REP_SERIALIZE_FAILED)
+		{
+			closesocket(fd1);
+			continue;
+		}
+
+		sendBuf = udo_http_rep_deserialize(&rep);
+		send(fd1, sendBuf, udo_http_rep_length(&rep),0);
 		closesocket(fd1);
-		
+		udo_http_rep_term(&rep);
+		udo_http_req_term(&req);
 	}
 	system("pause");
 	return 0;
