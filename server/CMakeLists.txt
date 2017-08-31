@@ -21,11 +21,13 @@ FILE(GLOB_RECURSE MAIN_SRC "./src/*")
 FILE(GLOB HTTP_SRC "./src/http/*")
 FILE(GLOB COMMON_CONFIG_SRC "./src/common/config/*")
 FILE(GLOB COMMON_ERROR_SRC "./src/common/error/*")
+FILE(GLOB COMMON_STRING_SRC "./src/common/string/*")
 FILE(GLOB MAIN_FILE "./src/*.c")
 
 
 source_group("src\\" FILES ${MAIN_FILE})
 source_group("src\\common\\config" FILES ${COMMON_CONFIG_SRC})
 source_group("src\\common\\error" FILES ${COMMON_ERROR_SRC})
+source_group("src\\common\\string" FILES ${COMMON_STRING_SRC})
 source_group("src\\http" FILES ${HTTP_SRC})
 add_executable(UDoHttp ${MAIN_SRC})
