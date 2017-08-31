@@ -45,26 +45,29 @@ void udo_http_req_deserialize(udo_http_req* self, char* req, int req_len)
 	}
 	if (strcmp(self->req_source, "\\") == 0)
 	{
-		char str[1024] = "\\web\\html\\HomePage.html";
-		strcpy(self->req_source, str);
+		char* str = "\\web\\html\\HomePage.html";
+		memcpy(self->req_source, str,strlen(str));
 	}
 	if (udo_rex_match(&rex, self->req_source, 
-		strlen(self->req_source), "[^\.]+\.(\\w+)$") == UDO_REX_NO_MATCH)
+		strlen(self->req_source), "[^\\.]+\\.(\\w+)$") == UDO_REX_NO_MATCH)
 	{
 		return;
 	}
 	match_str = udo_rex_index(&rex, 1, &match_length);
 	if (strncmp(match_str, "png", match_length) == 0)
 	{
-		strcpy(self->content_type, "image/png");
+		char* str = "image/png";
+		memcpy(self->content_type, str, strlen(str));
 	}
 	else if (strncmp(match_str, "ico", match_length) == 0)
 	{
-		strcpy(self->content_type, "image/png");
+		char* str = "image/png";
+		memcpy(self->content_type, str, strlen(str));
 	}
 	else if (strncmp(match_str, "html", match_length) == 0)
 	{
-		strcpy(self->content_type, "text/html");
+		char* str = "text/html";
+		memcpy(self->content_type, str, strlen(str));
 	}
 	udo_rex_term(&rex);
 }

@@ -8,7 +8,7 @@
 
 typedef struct udo_http_rep
 {
-	char rep[4096];
+	char* rep;
 	int rep_length;
 	udo_http_req req;
 }udo_http_rep;

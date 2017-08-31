@@ -13,6 +13,7 @@ char* udo_config_work_path(udo_config* self)
 		udo_assert_system(0);
 	}
 	PathRemoveFileSpec(self->path);
+	return self->path;
 }
 
 void udo_config_init(udo_config* self)
