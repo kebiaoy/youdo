@@ -6,6 +6,8 @@
 
 #define UDO_ARP_TOTAL_LEN 60
 
+struct udo_adapter;
+
 typedef struct udo_arp
 {
 	unsigned short hardware_type;
@@ -17,9 +19,10 @@ typedef struct udo_arp
 	unsigned char src_ip_addr[UDO_IP_ADDR_LEN];
 	unsigned char dst_mac_addr[UDO_MAC_ADDR_LEN];
 	unsigned char dst_ip_addr[UDO_IP_ADDR_LEN];
+	struct udo_adapter* adapter;
 }udo_arp;
 
-void udo_arp_init(udo_arp* self);
+void udo_arp_init(udo_arp* self, struct udo_adapter* adapter);
 
 void udo_arp_setop(udo_arp* self,int op);
 
@@ -44,6 +47,8 @@ unsigned char* udo_arp_getdia(udo_arp* self);
 void udo_arp_deserialize(udo_arp* self, unsigned char* packet, int start_offset);
 
 void udo_arp_serialize(udo_arp* self, unsigned char* packet, int start_offset);
+
+void udo_arp_send(udo_arp* self);
 
 void udo_arp_term(udo_arp* self);
 

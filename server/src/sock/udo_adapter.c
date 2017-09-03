@@ -10,8 +10,8 @@ static void udo_adapter_get(udo_adapter* self, int adapter_type);
 
 void udo_adapter_init(udo_adapter* self, int adapter_type)
 {
-	memset(self->ip, 0, UDO_ADAPTER_ADDR_LENGTH);
-	memset(self->mac_addr, 0, UDO_ADAPTER_ADDR_LENGTH);
+	memset(self->ip, 0, UDO_IP_ADDR_FORMAT_LEN);
+	memset(self->mac_addr, 0, UDO_IP_ADDR_FORMAT_LEN);
 	memset(self->adapter_name, 0, UDO_ADAPTER_NAME_LENGTH);
 
 	self->adapter_type = adapter_type;
@@ -19,12 +19,12 @@ void udo_adapter_init(udo_adapter* self, int adapter_type)
 	udo_adapter_get(self, adapter_type);
 }
 
-char* udo_adapter_mac(udo_adapter* self)
+unsigned char* udo_adapter_mac(udo_adapter* self)
 {
 	return self->mac_addr;
 }
 
-char* udo_adapter_ip(udo_adapter* self)
+unsigned char* udo_adapter_ip(udo_adapter* self)
 {
 	return self->ip;
 }
@@ -66,11 +66,12 @@ void udo_adapter_get(udo_adapter* self, int adapter_type)
 				pAdapter = pAdapter->Next;
 				continue;
 			}
-			memcpy(self->ip, pAdapter->IpAddressList.IpAddress.String,
-				sizeof(pAdapter->IpAddressList.IpAddress.String));
+			memcpy(self->ip, pAdapter->IpAddressList.IpAddress.String,UDO_IP_ADDR_FORMAT_LEN);
 			memcpy(self->mac_addr, pAdapter->Address, pAdapter->AddressLength);
 			self->mac_len = pAdapter->AddressLength;
 			memcpy(self->adapter_name, pAdapter->AdapterName, strlen(pAdapter->AdapterName));
+			memcpy(self->gateway_ip, pAdapter->GatewayList.IpAddress.String, UDO_IP_ADDR_FORMAT_LEN);
+			memcpy(self->mask, pAdapter->IpAddressList.IpMask.String, UDO_IP_ADDR_FORMAT_LEN);
 			break;
 		}
 	}
@@ -92,4 +93,14 @@ int udo_adapter_mlen(udo_adapter* self)
 char* udo_adapter_name(udo_adapter* self)
 {
 	return self->adapter_name;
+}
+
+unsigned char* udo_adpater_gateway(udo_adapter* self)
+{
+	return self->gateway_ip;
+}
+
+unsigned char* udo_adapter_mask(udo_adapter* self)
+{
+	return self->mask;
 }

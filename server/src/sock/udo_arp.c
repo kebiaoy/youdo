@@ -1,12 +1,14 @@
 #include <WinSock2.h>
 #include "../common/error/udo_error.h"
 #include "../common/string/udo_num.h"
+#include "udo_adapter.h"
 #include "udo_arp.h"
 
 
 
-void udo_arp_init(udo_arp* self)
+void udo_arp_init(udo_arp* self,struct udo_adapter* adapter)
 {
+	self->adapter = adapter;
 	self->op = 0;
 	self->procotol_type = UDO_ETHERNET_IP;
 	self->hardware_type = 1;

