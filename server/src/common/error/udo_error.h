@@ -15,6 +15,14 @@ if (!(x))\
 }\
 }while (0)
 
+#define udo_assert_str(x,str)\
+	if (!(x))\
+	{\
+	printf("error:%s  ", str); \
+	udo_assert(x); \
+	}
+	
+
 #define udo_assert_system(x)\
 do\
 {\

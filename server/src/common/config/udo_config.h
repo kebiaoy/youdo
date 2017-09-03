@@ -2,6 +2,7 @@
 #define UDO_CONFIG_H__
 #include <windows.h>
 
+
 typedef struct udo_config
 {
 	char path[MAX_PATH];
