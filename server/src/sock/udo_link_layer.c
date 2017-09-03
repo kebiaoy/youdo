@@ -1,6 +1,8 @@
 #include <WinSock2.h>
-#include "udo_link_layer.h"
+#include "../common/string/udo_num.h"
 #include "../common/error/udo_error.h"
+#include "udo_link_layer.h"
+
 
 void udo_link_layer_init(udo_link_layer* self)
 {
@@ -55,7 +57,7 @@ void udo_link_layer_setdst(udo_link_layer* self, unsigned char* dst)
 			j++;
 			continue;
 		}
-		self->dst_addr[j] = self->dst_addr[j] * 16 + (dst[i] - '0');
+		self->dst_addr[j] = self->dst_addr[j] * 16 + udo_number_char(dst[i]);
 	}
 }
 
@@ -70,7 +72,7 @@ void udo_link_layer_setsrc(udo_link_layer* self, unsigned char* src)
 			j++;
 			continue;
 		}
-		self->src_addr[j] = self->src_addr[j] * 16 + (src[i] - '0');
+		self->src_addr[j] = self->src_addr[j] * 16 + udo_number_char(src[i]);
 	}
 }
 

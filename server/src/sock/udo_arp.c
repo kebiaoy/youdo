@@ -1,5 +1,6 @@
 #include <WinSock2.h>
 #include "../common/error/udo_error.h"
+#include "../common/string/udo_num.h"
 #include "udo_arp.h"
 
 
@@ -39,7 +40,7 @@ void udo_arp_setsma(udo_arp* self, unsigned char* sma)
 			j++;
 			continue;
 		}
-		self->src_mac_addr[j] = self->src_mac_addr[j]*16+(sma[i] - '0');
+		self->src_mac_addr[j] = self->src_mac_addr[j] * 16 + udo_number_char(sma[i]);
 	}
 }
 
@@ -63,18 +64,15 @@ char* udo_arp_getsia(udo_arp* self)
 void udo_arp_setdma(udo_arp* self, unsigned char* dma)
 {
 	udo_assert(dma);
-	unsigned char mac_addr = 0;
-	for (int i = 0; i < UDO_MAC_ADDR_LEN; ++i)
+	int j = 0;
+	for (int i = 0; i < UDO_MAC_ADDR_FORMAT_LEN; ++i)
 	{
-		if ((i + 1) % 2)
+		if (dma[i] == UDO_MAC_ADDR_FORMAT_CHAR)
 		{
-			mac_addr += dma[i];
+			j++;
+			continue;
 		}
-		else
-		{
-			self->dst_mac_addr[i / 2] = mac_addr + dma[i];
-			mac_addr = 0;
-		}
+		self->dst_mac_addr[j] = self->dst_mac_addr[j] * 16 + udo_number_char(dma[i]);
 	}
 }
 
@@ -133,6 +131,9 @@ void udo_arp_serialize(udo_arp* self, unsigned char* packet, int start_offset)
 	t_packet += sizeof(self->hardware_len);
 	t_packet[0] = self->procotol_len;
 	t_packet += sizeof(self->procotol_len);
+	short_packet = (unsigned short*)t_packet;
+	short_packet[0] = htons(self->op);
+	t_packet += sizeof(self->op);
 	memcpy(t_packet, self->src_mac_addr, UDO_MAC_ADDR_LEN);
 	t_packet += UDO_MAC_ADDR_LEN;
 	memcpy(t_packet, self->src_ip_addr, UDO_IP_ADDR_LEN);

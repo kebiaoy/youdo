@@ -4,6 +4,8 @@
 #define UDO_ARP_REQUEST 1
 #define UDO_ARP_RESPONSE 2
 
+#define UDO_ARP_TOTAL_LEN 60
+
 typedef struct udo_arp
 {
 	unsigned short hardware_type;

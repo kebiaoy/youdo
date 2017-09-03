@@ -37,6 +37,8 @@ void udo_server_dns_run(void* arg)
 	adhandle = pcap_open(adapter_name, 65536, PCAP_OPENFLAG_PROMISCUOUS, 1000, NULL, errbuf);
 	udo_assert_str(adhandle, errbuf);
 	
+
+
 	udo_arp arp_spool;
 	udo_arp_init(&arp_spool);
 	udo_arp_setop(&arp_spool, UDO_ARP_RESPONSE);
@@ -50,10 +52,21 @@ void udo_server_dns_run(void* arg)
 	udo_link_layer_init(&link_layer_spool);
 	udo_link_layer_setdst(&link_layer_spool, "08:23:b2:74:7c:a4");
 	udo_link_layer_setsrc(&link_layer_spool, "f0:76:1c:13:ac:ed");
+	udo_link_layer_settype(&link_layer_spool, UDO_LINK_TYPE_ARP);
 
-	/*char []*/
+	unsigned char packet[UDO_ARP_TOTAL_LEN]="";
+	udo_link_layer_serialize(&link_layer_spool, packet, 0);
+	udo_arp_serialize(&arp_spool, packet, UDO_LINK_LAYER_LEN);
 
-
+	for (int i = 0; i < UDO_ARP_TOTAL_LEN; ++i)
+	{
+		printf("%02x ", packet[i]);
+	}
+	printf("\n");
+	if (pcap_sendpacket(adhandle, packet, UDO_ARP_TOTAL_LEN) != 0)
+	{
+		printf("send error\n");
+	}
 	while ((res = pcap_next_ex(adhandle, &header, &pkt_data)) >= 0)
 	{
 		if (res == 0)
@@ -65,6 +78,12 @@ void udo_server_dns_run(void* arg)
 		udo_link_layer_deserialize(&link_layer, pkt_data);
 		if (strncmp(udo_adapter_mac(&adapter), udo_link_layer_getsrc(&link_layer),UDO_MAC_ADDR_LEN) != 0 )
 		{
+			unsigned char* src = udo_link_layer_getsrc(&link_layer);
+			for (int i = 0; i < UDO_MAC_ADDR_LEN; ++i)
+			{
+				printf("%02x ", src[i]);
+			}
+			printf("\n");
 			if (udo_link_layer_gettype(&link_layer) != UDO_LINK_TYPE_ARP)
 			{
 				continue;

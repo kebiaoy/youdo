@@ -1,6 +1,7 @@
 #ifndef udo_link_layer_h__
 #define udo_link_layer_h__
 
+#define UDO_LINK_LAYER_LEN 14
 
 #define UDO_LINK_TYPE_IP 0x0800
 #define UDO_LINK_TYPE_ARP 0x0806
