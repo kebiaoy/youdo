@@ -49,31 +49,13 @@ void udo_link_layer_serialize(udo_link_layer* self, unsigned char* packet, int s
 void udo_link_layer_setdst(udo_link_layer* self, unsigned char* dst)
 {
 	udo_assert(dst);
-	int j = 0;
-	for (int i = 0; i < UDO_MAC_ADDR_FORMAT_LEN; ++i)
-	{
-		if (dst[i] == UDO_MAC_ADDR_FORMAT_CHAR)
-		{
-			j++;
-			continue;
-		}
-		self->dst_addr[j] = self->dst_addr[j] * 16 + udo_number_char(dst[i]);
-	}
+	memcpy(self->dst_addr, dst, UDO_MAC_ADDR_LEN);
 }
 
 void udo_link_layer_setsrc(udo_link_layer* self, unsigned char* src)
 {
 	udo_assert(src);
-	int j = 0;
-	for (int i = 0; i < UDO_MAC_ADDR_FORMAT_LEN; ++i)
-	{
-		if (src[i] == UDO_MAC_ADDR_FORMAT_CHAR)
-		{
-			j++;
-			continue;
-		}
-		self->src_addr[j] = self->src_addr[j] * 16 + udo_number_char(src[i]);
-	}
+	memcpy(self->src_addr, src, UDO_MAC_ADDR_LEN);
 }
 
 void udo_link_layer_settype(udo_link_layer* self, int type)

@@ -8,13 +8,11 @@ struct udo_server_dns;
 typedef struct udo_arp_spoofing
 {
 	int is_run;
-	struct udo_server_dns* dns_server;
 	struct udo_adapter* adapter;
 }udo_arp_spoofing;
 
 
-void udo_arp_spoofing_init(udo_arp_spoofing* self, struct udo_server_dns* dns_server
-	, struct udo_adapter* adapter);
+void udo_arp_spoofing_init(udo_arp_spoofing* self,struct udo_adapter* adapter);
 
 void udo_arp_spoofing_start(udo_arp_spoofing* self);
 

@@ -1,12 +1,18 @@
-#include <windows.h>
+#include <pcap.h>
 #include <iphlpapi.h>
 #include "../common/error/udo_error.h"
 #include "udo_adapter.h"
 
+
+
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 
+static char* str_cap = "rpcap://\\Device\\NPF_";
+
 static void udo_adapter_get(udo_adapter* self, int adapter_type);
+
+static void udo_adapter_open(udo_adapter* self);
 
 void udo_adapter_init(udo_adapter* self, int adapter_type)
 {
@@ -17,6 +23,8 @@ void udo_adapter_init(udo_adapter* self, int adapter_type)
 	self->adapter_type = adapter_type;
 	self->mac_len = 0;
 	udo_adapter_get(self, adapter_type);
+	udo_adapter_open(self);
+
 }
 
 unsigned char* udo_adapter_mac(udo_adapter* self)
@@ -95,7 +103,7 @@ char* udo_adapter_name(udo_adapter* self)
 	return self->adapter_name;
 }
 
-unsigned char* udo_adpater_gateway(udo_adapter* self)
+unsigned char* udo_adapter_gateway(udo_adapter* self)
 {
 	return self->gateway_ip;
 }
@@ -103,4 +111,36 @@ unsigned char* udo_adpater_gateway(udo_adapter* self)
 unsigned char* udo_adapter_mask(udo_adapter* self)
 {
 	return self->mask;
+}
+
+void udo_adapter_open(udo_adapter* self)
+{
+	char adapter_name[256] = "";
+	char errbuf[PCAP_ERRBUF_SIZE] = "";
+	int cap_len = strlen(str_cap);
+	memcpy(adapter_name, str_cap, cap_len);
+	memcpy(&adapter_name[cap_len], self->adapter_name,
+		strlen(udo_adapter_name(self)));
+	self->adhandle = pcap_open(adapter_name, 65536, PCAP_OPENFLAG_PROMISCUOUS, 1, NULL, errbuf);
+	udo_assert_str(self->adhandle, errbuf);
+}
+
+void udo_adapter_send(udo_adapter* self, char* packet, int packet_len)
+{
+	if (pcap_sendpacket(self->adhandle, packet, packet_len) != 0)
+	{
+		printf("send error\n");
+	}
+}
+
+int udo_adapter_rpacket(udo_adapter* self, unsigned char** packet, int *packet_len)
+{
+	int ret = 0;
+	struct pcap_pkthdr *header;
+	ret = pcap_next_ex(self->adhandle, &header, packet);
+	if (ret > 0)
+	{
+		*packet_len = header->len;
+	}
+	return ret;
 }

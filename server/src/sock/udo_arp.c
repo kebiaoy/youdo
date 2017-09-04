@@ -1,9 +1,9 @@
 #include <WinSock2.h>
 #include "../common/error/udo_error.h"
 #include "../common/string/udo_num.h"
+#include "udo_link_layer.h"
 #include "udo_adapter.h"
 #include "udo_arp.h"
-
 
 
 void udo_arp_init(udo_arp* self,struct udo_adapter* adapter)
@@ -34,16 +34,7 @@ void udo_arp_setsma(udo_arp* self, unsigned char* sma)
 {
 	
 	udo_assert(sma); 
-	int j = 0;
-	for (int i = 0; i < UDO_MAC_ADDR_FORMAT_LEN; ++i)
-	{
-		if (sma[i] == UDO_MAC_ADDR_FORMAT_CHAR)
-		{
-			j++;
-			continue;
-		}
-		self->src_mac_addr[j] = self->src_mac_addr[j] * 16 + udo_number_char(sma[i]);
-	}
+	memcpy(self->src_mac_addr, sma, UDO_MAC_ADDR_LEN);
 }
 
 char* udo_arp_getsma(udo_arp* self)
@@ -66,16 +57,7 @@ char* udo_arp_getsia(udo_arp* self)
 void udo_arp_setdma(udo_arp* self, unsigned char* dma)
 {
 	udo_assert(dma);
-	int j = 0;
-	for (int i = 0; i < UDO_MAC_ADDR_FORMAT_LEN; ++i)
-	{
-		if (dma[i] == UDO_MAC_ADDR_FORMAT_CHAR)
-		{
-			j++;
-			continue;
-		}
-		self->dst_mac_addr[j] = self->dst_mac_addr[j] * 16 + udo_number_char(dma[i]);
-	}
+	memcpy(self->dst_mac_addr, dma, UDO_MAC_ADDR_LEN);
 }
 
 char* udo_arp_getdma(udo_arp* self)
@@ -149,5 +131,29 @@ void udo_arp_serialize(udo_arp* self, unsigned char* packet, int start_offset)
 void udo_arp_term(udo_arp* self)
 {
 
+}
+
+void udo_arp_send(udo_arp* self)
+{
+	unsigned char packet[UDO_ARP_TOTAL_LEN] = "";
+	udo_link_layer link_layer_spool;
+	udo_link_layer_init(&link_layer_spool);
+	if (self->op == UDO_ARP_REQUEST)
+	{
+		unsigned char broad_cast[UDO_MAC_ADDR_LEN] = "";
+		memset(broad_cast, 255, UDO_MAC_ADDR_LEN);
+
+		udo_link_layer_setdst(&link_layer_spool, broad_cast);
+	}
+	else
+	{
+		udo_link_layer_setdst(&link_layer_spool, self->dst_mac_addr);
+	}
+	udo_link_layer_setsrc(&link_layer_spool, self->src_mac_addr);
+	udo_link_layer_settype(&link_layer_spool, UDO_LINK_TYPE_ARP);
+	udo_link_layer_serialize(&link_layer_spool, packet, 0);
+	udo_arp_serialize(self, packet, UDO_LINK_LAYER_LEN);
+
+	udo_adapter_send(self->adapter, packet, UDO_ARP_TOTAL_LEN);
 }
 
