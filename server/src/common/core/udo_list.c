@@ -15,8 +15,8 @@ int udo_list_item_inlist(udo_list_item* self)
 
 void udo_list_item_term(udo_list_item* self)
 {
-	udo_assert(self->next != UDO_LIST_ITEM_NOTINLIST);
-	udo_assert(self->pre != UDO_LIST_ITEM_NOTINLIST);
+	udo_assert(self->next == UDO_LIST_ITEM_NOTINLIST);
+	udo_assert(self->pre == UDO_LIST_ITEM_NOTINLIST);
 }
 
 void udo_list_init(udo_list* self)
@@ -43,7 +43,7 @@ udo_list_item* udo_list_end(udo_list* self)
 
 void udo_list_insert(udo_list* self, udo_list_item* it, udo_list_item* it_after)
 {
-	udo_list_item_inlist(!udo_list_item_inlist(it));
+	udo_assert(!udo_list_item_inlist(it));
 	it_after = it_after ? it_after : self->last;
 	it->pre = it_after;
 	if (it_after)
@@ -59,6 +59,9 @@ void udo_list_insert(udo_list* self, udo_list_item* it, udo_list_item* it_after)
 	if (it->next)
 	{
 		it->next->pre = it;
+	}
+	else
+	{
 		self->last = it;
 	}
 }

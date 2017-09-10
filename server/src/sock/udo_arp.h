@@ -1,6 +1,8 @@
 #ifndef udo_arp_h__
 #define udo_arp_h__
 
+#include "udo_ip.h"
+
 #define UDO_ARP_REQUEST 1
 #define UDO_ARP_RESPONSE 2
 
@@ -16,9 +18,9 @@ typedef struct udo_arp
 	unsigned char procotol_len;
 	unsigned short op;
 	unsigned char src_mac_addr[UDO_MAC_ADDR_LEN];
-	unsigned char src_ip_addr[UDO_IP_ADDR_LEN];
+	udo_ip src_ip_addr;
 	unsigned char dst_mac_addr[UDO_MAC_ADDR_LEN];
-	unsigned char dst_ip_addr[UDO_IP_ADDR_LEN];
+	udo_ip dst_ip_addr;
 	struct udo_adapter* adapter;
 }udo_arp;
 
@@ -32,23 +34,25 @@ void udo_arp_setsma(udo_arp* self, unsigned char* sma);
 
 unsigned char* udo_arp_getsma(udo_arp* self);
 
-void udo_arp_setsia(udo_arp* self, unsigned char* sia);
+void udo_arp_setsia(udo_arp* self, udo_ip* sia);
 
-unsigned char* udo_arp_getsia(udo_arp* self);
+udo_ip* udo_arp_getsia(udo_arp* self);
 
 void udo_arp_setdma(udo_arp* self, unsigned char* dma);
 
 unsigned char* udo_arp_getdma(udo_arp* self);
 
-void udo_arp_setdia(udo_arp* self, unsigned char* dia);
+void udo_arp_setdia(udo_arp* self, udo_ip* dia);
 
-unsigned char* udo_arp_getdia(udo_arp* self);
+udo_ip* udo_arp_getdia(udo_arp* self);
 
 void udo_arp_deserialize(udo_arp* self, unsigned char* packet, int start_offset);
 
 void udo_arp_serialize(udo_arp* self, unsigned char* packet, int start_offset);
 
-void udo_arp_send(udo_arp* self);
+void udo_arp_resonse(udo_arp* self);
+
+void udo_arp_request(udo_arp* self, udo_ip* ip);
 
 void udo_arp_term(udo_arp* self);
 
